@@ -13,25 +13,17 @@ import * as Contracts from ".";
 declare module "hardhat/types/runtime" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
     getContractFactory(
-      name: "AccessControl",
+      name: "Ownable",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.AccessControl__factory>;
+    ): Promise<Contracts.Ownable__factory>;
     getContractFactory(
-      name: "IAccessControl",
+      name: "IERC2981",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IAccessControl__factory>;
+    ): Promise<Contracts.IERC2981__factory>;
     getContractFactory(
       name: "ERC721",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ERC721__factory>;
-    getContractFactory(
-      name: "ERC721Enumerable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ERC721Enumerable__factory>;
-    getContractFactory(
-      name: "IERC721Enumerable",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC721Enumerable__factory>;
     getContractFactory(
       name: "IERC721Metadata",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -53,13 +45,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC165__factory>;
     getContractFactory(
-      name: "HollyPlus",
+      name: "OnChainEssay",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.HollyPlus__factory>;
-    getContractFactory(
-      name: "IERC2981",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC2981__factory>;
+    ): Promise<Contracts.OnChainEssay__factory>;
     getContractFactory(
       name: "RoyaltyConfig",
       signerOrOptions?: ethers.Signer | FactoryOptions

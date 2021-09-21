@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: MIT
 
-pragma solidity 0.8.5;
+pragma solidity 0.8.6;
 
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
-import "./IERC2981.sol";
-
-contract RoyaltyConfig is IERC2981, ERC165 {
-    event UpdatedRoyalty(uint256 indexed tokenId, address recipient, uint256 bps);
+contract RoyaltyConfig is IERC2981 {
+    event UpdatedRoyalty(
+        uint256 indexed tokenId,
+        address recipient,
+        uint256 bps
+    );
 
     struct RoyaltyInfo {
         uint256 bps;
@@ -49,21 +52,16 @@ contract RoyaltyConfig is IERC2981, ERC165 {
         returns (address receiver, uint256 royaltyAmount)
     {
         RoyaltyInfo memory royalty = royalities[tokenId];
-        return (
-            royalty.receiver,
-            (salePrice * royalty.bps) / 10000
-        );
+        return (royalty.receiver, (salePrice * royalty.bps) / 10000);
     }
 
     function supportsInterface(bytes4 interfaceId)
         public
         view
         virtual
-        override(ERC165)
+        override(IERC165)
         returns (bool)
     {
-        return
-            interfaceId == type(IERC2981).interfaceId ||
-            super.supportsInterface(interfaceId);
+        return interfaceId == type(IERC2981).interfaceId;
     }
 }
