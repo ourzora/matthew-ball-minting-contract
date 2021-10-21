@@ -33,6 +33,7 @@
     "@openzeppelin/contracts": "^4.3.2",
     "@typechain/ethers-v5": "^7.0.1",
     "@typechain/hardhat": "^2.3.0",
+    "@zoralabs/nft-editions-contracts": "^1.0.2",
     "hardhat-deploy": "^0.8.11",
     "typechain": "^5.1.2"
   }

@@ -6,6 +6,7 @@ pragma solidity 0.8.6;
   ⓑⓐⓛⓛ
 */
 
+import {IPublicSharedMetadata} from "@zoralabs/nft-editions-contracts/contracts/IPublicSharedMetadata.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
@@ -24,13 +25,18 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
         string contentUri;
         bytes32 contentHash;
     }
+    IPublicSharedMetadata private immutable sharedMetadata;
     mapping(uint256 => TokenInfo) private tokenInfo;
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIdTracker;
 
     /// @dev Sets up ERC721 Token
-    constructor(string memory name, string memory symbol) ERC721(name, symbol) {
-        // Pass
+    constructor(
+        string memory name,
+        string memory symbol,
+        IPublicSharedMetadata _sharedMetadata
+    ) ERC721(name, symbol) {
+        sharedMetadata = _sharedMetadata;
     }
 
     /// Only owner of token can burn.
@@ -96,16 +102,31 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
             "ERC721Metadata: URI query for nonexistent token"
         );
 
-        return tokenInfo[tokenId].metadataContent;
+        return
+            string(
+                sharedMetadata.encodeMetadataJSON(
+                    bytes(tokenInfo[tokenId].metadataContent)
+                )
+            );
     }
 
     /// @param tokenId token id to retrieve content for
-    function contentURI(uint256 tokenId) public override view returns (string memory) {
+    function contentURI(uint256 tokenId)
+        public
+        view
+        override
+        returns (string memory)
+    {
         return tokenInfo[tokenId].contentUri;
     }
 
     /// @param tokenId token id to retrieve hash for
-    function contentHash(uint256 tokenId) public override view returns (bytes32) {
+    function contentHash(uint256 tokenId)
+        public
+        view
+        override
+        returns (bytes32)
+    {
         return tokenInfo[tokenId].contentHash;
     }
 

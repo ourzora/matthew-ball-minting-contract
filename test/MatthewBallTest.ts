@@ -1,6 +1,4 @@
 import { expect } from "chai";
-import fs from 'fs';
-import path from 'path';
 import "@nomiclabs/hardhat-ethers";
 import { deployments, ethers } from "hardhat";
 
@@ -8,20 +6,21 @@ import type { MatthewBallMinting } from "../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("MatthewBallTest", () => {
-  let mintableArtistInstance: OnChainEssay;
+  let mintableArtistInstance: MatthewBallMinting;
   let signer: SignerWithAddress;
   let signerAddress: string;
   let signer1: SignerWithAddress;
   let signer1Address: string;
 
   beforeEach(async () => {
-    await deployments.fixture(["MatthewBallMinting"]);
+    await deployments.fixture(["SharedContract", "MatthewBallMinting"]);
     const deployment = await deployments.get("MatthewBallMinting");
     mintableArtistInstance = (await ethers.getContractAt(
       "MatthewBallMinting",
       deployment.address,
       signer
     )) as MatthewBallMinting;
+
     const signers = await ethers.getSigners();
     signer = signers[0];
     signerAddress = await signer.getAddress();
@@ -34,14 +33,24 @@ describe("MatthewBallTest", () => {
       await mintableArtistInstance.mint(
         signerAddress,
         "https://ipfs.io/ipfs/ASDF",
-        "0x0",
-        "{\"name\": \"test\", \"description\": \"Testing\", \"image\": \"https://ipfs.io/ipfs/AABA\"}",
-        0,
-        signerAddress
+        "0xad7b46a6f80cb9eda8e269e8ee2041b1b54ded627694010c1f35860b1c46f92a",
+        '{"name": "test", "description": "Testing", "image": "https://ipfs.io/ipfs/AABA"}',
+        signerAddress,
+        10
       );
 
-      const content = await mintableArtistInstance.content(0);
-      console.log({content});
+      const content = await mintableArtistInstance.contentURI(0);
+      const metadata = await mintableArtistInstance.tokenURI(0);
+      expect(content).to.be.equal("https://ipfs.io/ipfs/ASDF");
+      expect(metadata).to.be.equal(
+        "data:application/json;base64,eyJuYW1lIjogInRlc3QiLCAiZGVzY3JpcHRpb24iOiAiVGVzdGluZyIsICJpbWFnZSI6ICJodHRwczovL2lwZnMuaW8vaXBmcy9BQUJBIn0="
+      );
     });
   });
+  describe("royalties", () => {
+
+  })
+  describe("burning", () => {
+
+  })
 });
