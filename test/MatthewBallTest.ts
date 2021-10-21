@@ -4,6 +4,7 @@ import { deployments, ethers } from "hardhat";
 
 import type { MatthewBallMinting } from "../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { constants } from "ethers";
 
 describe("MatthewBallTest", () => {
   let mintableArtistInstance: MatthewBallMinting;
@@ -40,17 +41,44 @@ describe("MatthewBallTest", () => {
       );
 
       const content = await mintableArtistInstance.contentURI(0);
+      const contentHash = await mintableArtistInstance.contentHash(0);
       const metadata = await mintableArtistInstance.tokenURI(0);
       expect(content).to.be.equal("https://ipfs.io/ipfs/ASDF");
+      expect(contentHash).to.be.equal(
+        "0xad7b46a6f80cb9eda8e269e8ee2041b1b54ded627694010c1f35860b1c46f92a"
+      );
       expect(metadata).to.be.equal(
         "data:application/json;base64,eyJuYW1lIjogInRlc3QiLCAiZGVzY3JpcHRpb24iOiAiVGVzdGluZyIsICJpbWFnZSI6ICJodHRwczovL2lwZnMuaW8vaXBmcy9BQUJBIn0="
       );
     });
   });
-  describe("royalties", () => {
-
-  })
-  describe("burning", () => {
-
-  })
+  describe("with a minted token", () => {
+    beforeEach(async () => {
+      await mintableArtistInstance.mint(
+        signerAddress,
+        "https://ipfs.io/ipfs/ASDF",
+        "0xad7b46a6f80cb9eda8e269e8ee2041b1b54ded627694010c1f35860b1c46f92a",
+        '{"name": "test", "description": "Testing", "image": "https://ipfs.io/ipfs/AABA"}',
+        signerAddress,
+        100
+      );
+    });
+    it("returns correct royalties", async () => {
+      const royaltyInfo = await mintableArtistInstance.royaltyInfo(
+        0,
+        ethers.utils.parseEther("1")
+      );
+      expect(royaltyInfo[0]).to.be.equal(signerAddress);
+      expect(royaltyInfo[1]).to.be.equal(ethers.utils.parseEther("0.01"));
+    });
+    it("burns only from owner", async () => {
+      await expect(
+        mintableArtistInstance.connect(signer1).burn(0)
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+      await mintableArtistInstance.connect(signer).burn(0);
+      await expect(mintableArtistInstance.ownerOf(0)).to.be.revertedWith(
+        "ERC721: owner query for nonexistent token"
+      );
+    });
+  });
 });

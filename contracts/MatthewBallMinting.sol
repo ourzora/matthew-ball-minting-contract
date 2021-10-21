@@ -42,7 +42,7 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
     /// Only owner of token can burn.
     /// @param tokenId Token ID to burn
     function burn(uint256 tokenId) public onlyOwner {
-        require(_exists(tokenId));
+        require(_exists(tokenId), "Token does not exist");
         require(ERC721.ownerOf(tokenId) == _msgSender(), "Not Owner");
         _burn(tokenId);
     }
