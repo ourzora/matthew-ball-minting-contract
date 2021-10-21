@@ -1,0 +1,11 @@
+{
+  "name": "The Metaverse",
+  "description": "What It Is, Where to Find it, Who Will Build It, and Fortnite",
+  "external_url": "/metaverse-essay.html",
+  "image": "/metaverse-preview.gif",
+  "animation_url": "/metaverse-essay.html",
+  "content": {
+    "url": "/metaverse-essay.md",
+    "mime": "text/markdown"
+  }
+}

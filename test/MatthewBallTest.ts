@@ -1,12 +1,10 @@
 import { expect } from "chai";
-// @ts-ignore
-import pako from 'pako';
 import fs from 'fs';
 import path from 'path';
 import "@nomiclabs/hardhat-ethers";
 import { deployments, ethers } from "hardhat";
 
-import type { OnChainEssay } from "../typechain";
+import type { MatthewBallMinting } from "../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 describe("MatthewBallTest", () => {
@@ -17,13 +15,13 @@ describe("MatthewBallTest", () => {
   let signer1Address: string;
 
   beforeEach(async () => {
-    await deployments.fixture(["OnChainEssay"]);
-    const deployment = await deployments.get("OnChainEssay");
+    await deployments.fixture(["MatthewBallMinting"]);
+    const deployment = await deployments.get("MatthewBallMinting");
     mintableArtistInstance = (await ethers.getContractAt(
-      "OnChainEssay",
+      "MatthewBallMinting",
       deployment.address,
       signer
-    )) as OnChainEssay;
+    )) as MatthewBallMinting;
     const signers = await ethers.getSigners();
     signer = signers[0];
     signerAddress = await signer.getAddress();
@@ -33,22 +31,15 @@ describe("MatthewBallTest", () => {
 
   describe("minting", () => {
     it("creates a NFT", async () => {
-      const text = fs.readFileSync(path.join(__dirname, '../assets/ball-intro.txt')).toString();
-      const textLen = text.length;
-      console.log({textLen});
-      console.log(text);
-      const data = new TextEncoder().encode(text);
-      const compressed = pako.deflateRaw(data, { level: 9 });
       await mintableArtistInstance.mint(
         signerAddress,
-        "name",
-        "description",
-        "application/markdown",
-        signerAddress,
-        compressed,
-        textLen,
-        12,
+        "https://ipfs.io/ipfs/ASDF",
+        "0x0",
+        "{\"name\": \"test\", \"description\": \"Testing\", \"image\": \"https://ipfs.io/ipfs/AABA\"}",
+        0,
+        signerAddress
       );
+
       const content = await mintableArtistInstance.content(0);
       console.log({content});
     });
