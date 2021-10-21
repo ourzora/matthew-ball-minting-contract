@@ -1,10 +1,16 @@
-module.exports = async ({ getNamedAccounts, deployments }: any) => {
+module.exports = async ({ getNamedAccounts, deployments, network }: any) => {
   const { deploy } = deployments;
   const { deployer, sharedMetadataContract } = await getNamedAccounts();
 
-  let sharedContractDeployment = (await deployments.get("TestSharedContract")).address;
+  let sharedContractDeployment = sharedMetadataContract;
   if (!sharedContractDeployment) {
-    sharedContractDeployment = sharedMetadataContract;
+    if (network.name === "hardhat") {
+      const deployment = await deploy("TestSharedContract", {
+        from: deployer,
+        log: true,
+      });
+      sharedContractDeployment = deployment.address;
+    }
   }
 
   await deploy("MatthewBallMinting", {
@@ -18,4 +24,3 @@ module.exports = async ({ getNamedAccounts, deployments }: any) => {
   });
 };
 module.exports.tags = ["MatthewBallMinting"];
-module.exports.dependencies = ["TestSharedContract"];

@@ -52,6 +52,17 @@ describe("MatthewBallTest", () => {
       );
     });
   });
+  it("describes functionalities with erc165 correctly", async () => {
+    // ERC2891 interface
+    expect(await mintableArtistInstance.supportsInterface("0x2a55205a")).to.be
+      .true;
+    // ERC165 interface
+    expect(await mintableArtistInstance.supportsInterface("0x01ffc9a7")).to.be
+      .true;
+    // ERC721 interface
+    expect(await mintableArtistInstance.supportsInterface("0x80ac58cd")).to.be
+      .true;
+  });
   describe("with a minted token", () => {
     beforeEach(async () => {
       await mintableArtistInstance.mint(

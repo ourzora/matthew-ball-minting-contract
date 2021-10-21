@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-v3
+// SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.6;
 
 /**
@@ -81,6 +81,17 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
         _tokenIdTracker.increment();
     }
 
+    /// Updates the metadata content to a new string for new schemas / adding licenses and metadata uri updates
+    /// Only callable by the contract owner.
+    /// @param tokenId token id to update the metadata for
+    /// @param newMetadataContent new metadata content json string to update
+    function updateMetadataContent(
+        uint256 tokenId,
+        string memory newMetadataContent
+    ) external onlyOwner {
+        tokenInfo[tokenId].metadataContent = newMetadataContent;
+    }
+
     /// @param tokenId token id to set royalty payout for
     /// @param newAddress new address to recieve royalty payout on-chain
     function setRoyaltyPayoutAddressForToken(
@@ -139,7 +150,8 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
         returns (bool)
     {
         return
-            super.supportsInterface(interfaceId) ||
+            ERC721.supportsInterface(interfaceId) ||
+            RoyaltyConfig.supportsInterface(interfaceId) ||
             interfaceId == type(ITokenContent).interfaceId;
     }
 }
