@@ -1,11 +1,38 @@
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.6;
 
-/**
-ⓜⓐⓣⓣⓗⓔⓦ
-  ⓑⓐⓛⓛ
+/*                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                     /@@@@@@@@@@@@@@@@@@@@@@@@@@@@   @@@@@@                     
+                     /@  @@%  @@@@@@@@@@@@@@@@@@@@@@@@@@  @                     
+                         @                             @  @                     
+                     /@  @  @@@@@@@@@@@@@@@@@@@@@@@@@  @  @                     
+                     /@  @  @@@@@@@@@@@@@@@@@@@@@@@@@     @                     
+                     /@  @  @@@@@@@@@@@@@@@@@@@@@@@@@  @  @                     
+                     /@  @  @@@@@@@@@@@@@@@@@@@@@@@@@  @  @                     
+                     /@  @  @@@@@@@@@@@@@@@@@@@@@@@@@  @  @                     
+                     /@  @  @@@@@@@@@@@@@@@@@@@@@@@@@  @  @                     
+                     /@  @  @@@@@@@@@@@@@@@@@@@@@@@@@  @  @                     
+                     /@     @@@@@@@@@@@@@@@@@@@@@@@@@  @  @                     
+                     /@  @  @@@@@@@@@@@@@@@@@@@@@@@@@  @  @                     
+                     /@  @                             @                        
+                     /@  @@@@@@@@@@@@@@@@@@@@@@   @@@@@@  @                     
+                     /@(((.  (((((((((((((((((((((((((((((@                     
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+                                                                                
+              
 */
-
 import {IPublicSharedMetadata} from "@zoralabs/nft-editions-contracts/contracts/IPublicSharedMetadata.sol";
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {Counters} from "@openzeppelin/contracts/utils/Counters.sol";
@@ -13,24 +40,41 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {RoyaltyConfig} from "./royalties/RoyaltyConfig.sol";
 import {ITokenContent} from "./ITokenContent.sol";
 
-/**
- * org: zoralabs
+/*
+ * org: @ourzora
  *
- * project: on-chain metadata essay contract
+ * project: on-chain metadata metaverse minting contract for matthew ball
  * author: matthew ball
+ * contract: @isiain
  */
 contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
+    /// Struct to store token info for each token id in contract
     struct TokenInfo {
         string metadataContent;
         string contentUri;
         bytes32 contentHash;
     }
+    /// Shared metadata rendering contract
     IPublicSharedMetadata private immutable sharedMetadata;
+    /// Token info struct for rendering out each token in contact
     mapping(uint256 => TokenInfo) private tokenInfo;
     using Counters for Counters.Counter;
+    /// Counter to keep track of the currently minted token
     Counters.Counter private _tokenIdTracker;
 
+    /// Modifier to check if the token exists
+    modifier tokenExists(uint256 tokenId) {
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        );
+        _;
+    }
+
     /// @dev Sets up ERC721 Token
+    /// @param name name of token
+    /// @param symbol symbol of token
+    /// @param symbol _sharedMetadata address of metadata interface
     constructor(
         string memory name,
         string memory symbol,
@@ -41,9 +85,8 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
 
     /// Only owner of token can burn.
     /// @param tokenId Token ID to burn
-    function burn(uint256 tokenId) public onlyOwner {
-        require(_exists(tokenId), "Token does not exist");
-        require(ERC721.ownerOf(tokenId) == _msgSender(), "Not Owner");
+    function burn(uint256 tokenId) public tokenExists(tokenId) onlyOwner {
+        require(ERC721.ownerOf(tokenId) == _msgSender(), "Only owner");
         _burn(tokenId);
     }
 
@@ -88,7 +131,7 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
     function updateMetadataContent(
         uint256 tokenId,
         string memory newMetadataContent
-    ) external onlyOwner {
+    ) external tokenExists(tokenId) onlyOwner {
         tokenInfo[tokenId].metadataContent = newMetadataContent;
     }
 
@@ -97,7 +140,7 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
     function setRoyaltyPayoutAddressForToken(
         uint256 tokenId,
         address newAddress
-    ) external onlyOwner {
+    ) external tokenExists(tokenId) onlyOwner {
         _setRoyaltyPayoutAddressForToken(newAddress, tokenId);
     }
 
@@ -106,13 +149,9 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
         public
         view
         override
+        tokenExists(tokenId)
         returns (string memory)
     {
-        require(
-            _exists(tokenId),
-            "ERC721Metadata: URI query for nonexistent token"
-        );
-
         return
             string(
                 sharedMetadata.encodeMetadataJSON(
@@ -126,6 +165,7 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
         public
         view
         override
+        tokenExists(tokenId)
         returns (string memory)
     {
         return tokenInfo[tokenId].contentUri;
@@ -136,12 +176,14 @@ contract MatthewBallMinting is Ownable, ERC721, RoyaltyConfig, ITokenContent {
         public
         view
         override
+        tokenExists(tokenId)
         returns (bytes32)
     {
         return tokenInfo[tokenId].contentHash;
     }
 
-    // Needed to call multiple supers.
+    /// Interface ERC165 spec calls
+    /// @param interfaceId interface id to see what is supported
     function supportsInterface(bytes4 interfaceId)
         public
         view
