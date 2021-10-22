@@ -4,7 +4,6 @@ import { deployments, ethers } from "hardhat";
 
 import type { MatthewBallMinting } from "../typechain";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { constants } from "ethers";
 
 describe("MatthewBallTest", () => {
   let mintableArtistInstance: MatthewBallMinting;
@@ -51,6 +50,20 @@ describe("MatthewBallTest", () => {
         "data:application/json;base64,eyJuYW1lIjogInRlc3QiLCAiZGVzY3JpcHRpb24iOiAiVGVzdGluZyIsICJpbWFnZSI6ICJodHRwczovL2lwZnMuaW8vaXBmcy9BQUJBIn0="
       );
     });
+    it("allows minting only from owner", async () => {
+      await expect(
+        mintableArtistInstance
+          .connect(signer1)
+          .mint(
+            signerAddress,
+            "https://ipfs.io/ipfs/ASDF",
+            "0xad7b46a6f80cb9eda8e269e8ee2041b1b54ded627694010c1f35860b1c46f92a",
+            '{"name": "test", "description": "Testing", "image": "https://ipfs.io/ipfs/AABA"}',
+            signerAddress,
+            10
+          )
+      ).to.be.revertedWith("Ownable: caller is not the owner");
+    });
   });
   it("describes functionalities with erc165 correctly", async () => {
     // ERC2891 interface
@@ -81,6 +94,22 @@ describe("MatthewBallTest", () => {
       );
       expect(royaltyInfo[0]).to.be.equal(signerAddress);
       expect(royaltyInfo[1]).to.be.equal(ethers.utils.parseEther("0.01"));
+    });
+    it("updates token royalty payout address", async () => {
+      const royaltyInfo = await mintableArtistInstance.royaltyInfo(
+        0,
+        ethers.utils.parseEther("1")
+      );
+      expect(royaltyInfo[0]).to.be.equal(signerAddress);
+      await mintableArtistInstance.setRoyaltyPayoutAddressForToken(
+        "0",
+        signer1Address
+      );
+      const royaltyInfoUpdated = await mintableArtistInstance.royaltyInfo(
+        0,
+        ethers.utils.parseEther("1")
+      );
+      expect(royaltyInfoUpdated[0]).to.be.equal(signer1Address);
     });
     it("burns only from owner", async () => {
       await expect(
