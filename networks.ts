@@ -17,7 +17,7 @@ if (process.env.DEV_MNEMONIC) {
     };
   }
   if (process.env.MAINNET_RPC) {
-    networks.rinkeby = {
+    networks.mainnet = {
       chainId: 1,
       url: process.env.MAINNET_RPC,
       accounts: [process.env.PROD_PRIVATE_KEY as string],
