@@ -84,7 +84,7 @@ describe("MatthewBallTest", () => {
         "0xad7b46a6f80cb9eda8e269e8ee2041b1b54ded627694010c1f35860b1c46f92a",
         '{"name": "test", "description": "Testing", "image": "https://ipfs.io/ipfs/AABA"}',
         signerAddress,
-        100
+        1500
       );
     });
     it("returns correct royalties", async () => {
@@ -93,7 +93,7 @@ describe("MatthewBallTest", () => {
         ethers.utils.parseEther("1")
       );
       expect(royaltyInfo[0]).to.be.equal(signerAddress);
-      expect(royaltyInfo[1]).to.be.equal(ethers.utils.parseEther("0.01"));
+      expect(royaltyInfo[1]).to.be.equal(ethers.utils.parseEther("0.15"));
     });
     it("updates token royalty payout address", async () => {
       const royaltyInfo = await mintableArtistInstance.royaltyInfo(

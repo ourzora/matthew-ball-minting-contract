@@ -1,4 +1,4 @@
-# The Metaverse: What It Is, Where to Find it, Who Will Build It, and Fortnite
+# The Metaverse: What It Is, Where to Find it, and Who Will Build It
  
 Technology frequently produces surprises that nobody predicts. However, the biggest developments are often anticipated decades in advance. In 1945 Vannevar Bush described what he-called the “[Memex](https://en.wikipedia.org/wiki/Memex)”, a single device that would store all books, records and communications, and mechanically link them together by association. This concept was then used to formulate the idea of “hypertext” (a term coined two decades later), which in turn guided the development of the World Wide Web (developed another two decades later). The “Streaming Wars” have only just begun, yet the first streaming video took place more than 25 years ago. What’s more, many of the attributes of this so-called war have been hypothesized for decades, such as virtually infinite supplies of content, on-demand playback, interactivity, dynamic and personalized ads, and the value of converging content with distribution.
  
